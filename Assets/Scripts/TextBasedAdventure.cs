@@ -8,18 +8,43 @@ public class TextBasedAdventure : MonoBehaviour
         Empty,
         Item,
         Enemy,
-        Exit,
+        Teleporter,
+        Blockade,
+        Exit
     }
 
-    private string[,] tileNames = { { "Dark Cave"   /* 0,0 */,  "Mossy Tunnel" /* 0,1 */,   "Crystal Room" /* 0,2 */ },
-                                    { "Bone Chamber"/* 1,0 */,  "Flooded Hall" /* 1,1 */,   "Iron Gate"              },
-                                    { "Goblin Den",             "Armory",                   "Throne Room"            }
+    private string[,] tileNames = { { "Dark Cave",  "Mossy Tunnel", "Crystal Room", "Science Lab"},
+                                    { "Bone Chamber", "Flooded Hall", "Iron Gate", "Evil Lair of Doom"},
+                                    { "Goblin Den", "Armory", "Throne Room", "Abandoned Classroom"},
+                                    { "Heavenly Top", "Lava Pit", "Convenience Store", "Backroom"}
+                                  };
+
+    private TileType[,] tileTypes = { { TileType.Empty, TileType.Empty, TileType.Teleporter, TileType.Teleporter },
+                                      { TileType.Enemy, TileType.Empty, TileType.Blockade, TileType.Enemy },
+                                      { TileType.Enemy, TileType.Item, TileType.Teleporter, TileType.Enemy },
+                                      { TileType.Teleporter, TileType.Blockade, TileType.Item, TileType.Exit }
                                     };
 
-    private TileType[,] tileTypes = {   { TileType.Empty, TileType.Item,  TileType.Empty},
-                                        { TileType.Enemy, TileType.Empty, TileType.Exit },
-                                        { TileType.Empty, TileType.Enemy, TileType.Item }
-                                    };
+    private string[,] tileDescriptions = { { "So dark and cavey... What a start.",
+                                             "Wet and mossy in the pipes.",
+                                             "I can see myself in the crystals!",
+                                             "This science lab has a cozy teleporter." },
+                                           { "So many spooky skeletons!",
+                                             "Great. My feet are wet in this hall.",
+                                             "I don't have a key to get through the gates.",
+                                             "EVIL. LAIR. OF. DOOM!!!" },
+                                           { "Must. Slay. All. Goblins.",
+                                             "Some weapons and armors here could be useful.",
+                                             "Does a king live here...?",
+                                             "I feel chilly and uncomfortable in this abandoned classroom..."},
+                                           { "God Almighty blessing upon the top",
+                                             "The floor is literally lava. I don't wanna go.",
+                                             "Convenience store here of all place? I'm hungry.",
+                                             "Oh no. Not the backrooms. It seems like it's the only way out..."
+                                           }
+                                         };
+
+    private bool[,] tileEntered = new bool[4, 4]; // All falses
 
     private int playerRow = 0;
     private int playerCol = 0;
