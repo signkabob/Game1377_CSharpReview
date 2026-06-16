@@ -28,7 +28,7 @@ public class TextBasedAdventure : MonoBehaviour
     private string[,] tileDescriptions = { { "So dark and cavey... What a start.",
                                              "Wet and mossy in the pipes.",
                                              "I can see myself in the crystals!",
-                                             "This science lab has a cozy teleporter." },
+                                             "This science lab has a cozy fresh air." },
                                            { "So many spooky skeletons!",
                                              "Great. My feet are wet in this hall.",
                                              "I don't have a key to get through the gates.",
@@ -74,26 +74,43 @@ public class TextBasedAdventure : MonoBehaviour
     {
         Debug.Log("You are in: " + tileNames[playerRow, playerCol]);
 
+        if (tileEntered[playerRow, playerCol] == false)
+        {
+            Look();
+            tileEntered[playerRow, playerCol] = true;
+        }
+
         switch (tileTypes[playerRow, playerCol])
         {
             case TileType.Empty:
                 Debug.Log("There is nothing here.");
                 break;
             case TileType.Enemy:
-                Debug.Log("Oooo a spooky ghost");
+                Debug.Log("A wild enemy appeared!");
                 EncounterEnemy();
                 break;
             case TileType.Item:
-                Debug.Log("You see a shiny object");
+                Debug.Log("You see a health potion.");
                 ItemPickup();
                 break;
+            case TileType.Teleporter:
+                Debug.Log("You see a teleporter here.");
+                break;
+            case TileType.Blockade:
+                Debug.Log("Something is blocking your way.");
+                break;
             case TileType.Exit:
-                Debug.Log("You see a way out");
+                Debug.Log("You see a way out.");
                 break;
             default:
                 Debug.LogError("Invalid TileType");
                 break;
         }
+    }
+
+    private void Look()
+    {
+        Debug.Log(tileDescriptions[playerRow, playerCol]);
     }
 
     private void EncounterEnemy()
@@ -132,12 +149,19 @@ public class TextBasedAdventure : MonoBehaviour
     {
         if (CheckIfNewPositionInTileBounds(newRow, newCol))
         {
-            playerRow = newRow;
-            playerCol = newCol;
+            if (!CheckIfNewPositionInBlockade(newRow, newCol))
+            {
+                playerRow = newRow;
+                playerCol = newCol;
+            }
+            else
+            {
+                Debug.Log("Can't go that way. Something is blocking your way.");
+            }
         }
         else
         {
-            Debug.Log("Can't go that way");
+            Debug.Log("Can't go that way. Out of bounds.");
         }
     }
 
@@ -150,6 +174,17 @@ public class TextBasedAdventure : MonoBehaviour
     private bool CheckIfNewPositionInTileBounds(int newRow, int newCol)
     {
         return (newRow >= 0 && newRow < tileNames.GetLength(0)) && (newCol >= 0 && newCol < tileNames.GetLength(1));
+    }
+
+    /// <summary>
+    /// Determine if the new row and column position is not in blockade
+    /// </summary>
+    /// <param name="newRow"></param>
+    /// <param name="newCol"></param>
+    /// <returns>True if it is in blockade, false if not</returns>
+    private bool CheckIfNewPositionInBlockade(int newRow, int newCol)
+    {
+        return (tileTypes[newRow,newCol] == TileType.Blockade);
     }
 
     /// <summary>
@@ -183,6 +218,9 @@ public class TextBasedAdventure : MonoBehaviour
         {
             Debug.Log("You pressed " + KeyCode.S);
             newRow++;
+        }else if (Input.GetKeyDown(KeyCode.Space))
+        {
+            Look();
         }
         else
         {
